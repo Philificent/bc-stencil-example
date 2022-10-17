@@ -1,0 +1,88 @@
+{{#if children}}
+<a class="navPages-action has-subMenu{{#if is_active}} activePage{{/if}}"
+   href="{{url}}"
+>
+    {{#if description}}
+        {{{description}}}
+    {{else}}
+        {{name}}
+    {{/if}}
+    <i class="icon navPages-action-moreIcon" aria-hidden="true" data-collapsible="navPages-{{id}}">
+        <svg><use xlink:href="#icon-chevron-down" /></svg>
+    </i>
+</a>
+<div class="navPage-subMenu" id="navPages-{{id}}" aria-hidden="true" tabindex="-1">
+    <div class="navPage-wrapper">
+        <div class="navPage-subMenu-wrap">
+            <div class="nav-category-title">{{name}}</div>
+            <ul class="navPage-subMenu-list">
+                <li class="navPage-subMenu-item">
+                    <a class="navPage-subMenu-action navPages-action navPage-wholesale-link navPage-sublink"
+                    href="{{url}}"
+                    aria-label="{{lang 'category.view_all.name' category=name}}"
+                    >
+                    {{#if description}}
+                        {{lang 'category.view_all_wholesale'}} {{{description}}}
+                    {{else}}
+                        {{lang 'category.view_all.name' category=name}}
+                    {{/if}}
+                    </a>
+                </li>
+                {{#each children}}
+                    <li class="navPage-subMenu-item">
+                        {{#if children}}
+                            <a class="navPage-subMenu-action navPages-action navPage-sublink has-subMenu{{#if is_active}} activePage{{/if}}"
+                            href="{{url}}"
+                            aria-label="{{name}}"
+                            >
+                                {{name}}
+                                <span class="collapsible-icon-wrapper"
+                                    data-collapsible="navPages-{{id}}"
+                                    data-collapsible-disabled-breakpoint="medium"
+                                    data-collapsible-disabled-state="open"
+                                    data-collapsible-enabled-state="closed"
+                                >
+                                    <i class="icon navPages-action-moreIcon" aria-hidden="true">
+                                        <svg><use xlink:href="#icon-chevron-down" /></svg>
+                                    </i>
+                                </span>
+                            </a>
+                            <ul class="navPage-childList" id="navPages-{{id}}">
+                                {{#each children}}
+                                <li class="navPage-childList-item">
+                                    <a class="navPage-childList-action navPages-action{{#if is_active}} activePage{{/if}}"
+                                    href="{{url}}"
+                                    aria-label="{{name}}"
+                                    >
+                                        {{name}}
+                                    </a>
+                                </li>
+                                {{/each}}
+                            </ul>
+                        {{else}}
+                            <a class="navPage-subMenu-action navPages-action{{#if is_active}} activePage{{/if}} navPage-sublink"
+                            href="{{url}}"
+                            aria-label="{{name}}"
+                            >
+                            {{#if description}}
+                                {{{description}}}
+                            {{else}}
+                                {{name}}
+                            {{/if}}
+                            </a>
+                        {{/if}}
+                    </li>
+                {{/each}}
+            </ul>
+        </div>
+        {{> components/common/navigation-feature navCategory=name }}
+    </div>
+</div>
+{{else}}
+<a class="navPages-action{{#if is_active}} activePage{{/if}}"
+   href="{{url}}"
+   aria-label="{{name}}"
+>
+    {{name}}
+</a>
+{{/if}}

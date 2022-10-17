@@ -1,0 +1,41 @@
+<nav class="navUser">
+  {{> components/common/store-logo}}
+  {{#or customer (unless theme_settings.restrict_to_login)}}
+      {{> components/common/currency-selector}}
+  {{/or}}
+
+  <ul class="navUser-section navUser-section--alt navUser-section--guest">
+    {{#if theme_settings.social_icon_placement_top}}
+        <li class="navUser-item navUser-item--social">
+            {{> components/common/social-links}}
+        </li>
+        <li class="navUser-item navUser-item--divider">|</li>
+    {{/if}}
+    <li class="navUser-item--login navUser-item--account">
+      {{#if customer}}
+        <!-- tumbleweeds...  -->
+      {{else}}
+      {{!-- 
+        <a class="navUser-action"
+            href="{{urls.auth.login}}"
+            aria-label="{{lang 'common.login'}}"
+        >
+            {{lang 'common.login'}}
+        </a>
+      --}}
+      <button class="navUser-action" onclick="launchLoginModal()" aria-label="{{lang 'common.login'}}">
+        {{lang 'common.login'}}
+      </button>
+        {{#if settings.account_creation_enabled}}
+            <a class="navUser-action"
+                href="{{urls.auth.create_account}}"
+                aria-label="{{lang 'common.sign_up'}}"
+            >
+                {{lang 'common.sign_up'}}
+            </a>
+        {{/if}}
+      {{/if}}
+    </li>
+  </ul>
+  <div class="navUserLoader"></div>
+</nav>

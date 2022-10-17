@@ -1,0 +1,9 @@
+<main class="body {{#if template '==' 'pages/home'}}home-content{{/if}} {{#if page.title '==' 'Foundation'}}foundation-content{{/if}}" id="main-content" role="main" data-currency-code="{{currency_selector.active_currency_code}}">
+    {{#block "hero"}} {{/block}}
+    <div class="container">
+        {{#block "page"}} {{/block}}
+    </div>
+    {{> components/common/modal/login-modal}}
+    {{> components/common/modal/modal}}
+    {{> components/common/alert/alert-modal}}
+</main>

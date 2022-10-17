@@ -1,0 +1,27 @@
+<style>
+  @media (min-width: 320px) {
+    .nav-feature-container {
+      display: none;
+    }
+  }
+  @media (min-width: 801px) {
+    .nav-feature-container {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+</style>
+<div class="nav-feature-container">
+  {{#if navCategory '==' 'Bedding'}}
+    {{{region name="nav_bedding_feature--global"}}}
+  {{/if}}
+  {{#if navCategory '==' 'Mattresses'}}
+    {{{region name="nav_mattresses_feature--global"}}}
+  {{/if}}
+  {{#if navCategory '==' 'Furniture'}}
+    {{{region name="nav_furniture_feature--global"}}}
+  {{/if}}
+  {{#if navCategory '==' 'More'}}
+    {{{region name="nav_miscellaneous_feature--global"}}}
+  {{/if}}
+</div>

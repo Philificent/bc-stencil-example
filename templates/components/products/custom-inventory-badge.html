@@ -1,0 +1,7 @@
+<div class="custom-badge custom-badge-low-stock">
+  {{#if badge_stock}}
+    <p>{{lang 'category.stock_alert'}} {{{badge_stock}}} {{lang 'category.stock_left'}}</p>
+  {{else}}
+    <p>{{lang 'category.low_stock'}}</p>
+  {{/if}}
+</div>

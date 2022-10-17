@@ -1,0 +1,159 @@
+<style>
+  .absolute {position: absolute;}
+    .absolute.top {top:0;}
+    .absolute.left {left: 0;}
+  .membership-change-nav {padding: 0.5rem;height: 100%;display: flex;align-items: center;min-width: 230px;font-size: 0.875rem;}
+    .drop-arrowed {padding-left: 0.5rem;cursor: pointer;}
+      .drop-arrowed svg {width: 0.5rem;}
+    .drop-area {top: 49px;background: #fff;z-index: 5;width: fit-content;border: 0;;display: flex;flex-direction: column;box-shadow: 2px 0 12px rgb(61 57 54 / 20%);padding: 0.625rem;}
+      .drop-area.hide {display: none;}
+      .drop-area ul {margin-left: 0;}
+        .drop-area li {display: flex;align-items: center;}
+          .drop-area button {text-align: left;margin-left: 14px;}
+            .drop-area button.chosen {margin-left: 0;}
+          .drop-area button:hover {text-decoration: underline;}
+            .drop-area button.chosen:hover {text-decoration: none;}
+    .navUserLoader {width: 0;height: 2px;background:#438DE7;position: absolute;bottom: 0;left: 0;}
+    .navPages-top .membership-change-nav {display: none;}
+      .circle {position: relative;background: #438DE7;border-radius: 50%;width: 15px;height: 15px;}
+        .checkmark {position: absolute;transform: rotate(45deg) translate(-50%, -50%);left: 35%;top: 45%;height: 7px;width: 4px;border-bottom: 1.5px solid #fff;border-right: 1.5px solid #fff;}
+        .chosen {color: #438DE7;}
+
+    @media (max-width: 800px) {
+      .membership-change-nav {display: none;padding-left: 0;letter-spacing: 1px;text-transform: uppercase;}
+      .navPages-top .membership-change-nav {display: block;position: relative;height: unset;}
+        .navPages-top .membership-change-nav.expand {height: 130px;}
+      .drop-area {top: unset;bottom: 0;background: transparent;box-shadow: none;padding: 0;}
+        .drop-area button {text-transform: uppercase;letter-spacing: 1px;}
+    }
+</style>
+
+<div class="membership-change-nav">
+  {{#if customer.customer_group_name "==" "Employee"}}
+    Employee Pricing
+  {{/if}}
+  {{#contains customer.customer_group_name "Friends"}}
+    VIP Friends &amp; Family Pricing
+  {{/contains}}
+  {{#contains customer.customer_group_name "Corporate"}}
+    VIP Corporate
+  {{/contains}}
+  {{#contains customer.customer_group_name "Wholesale"}}
+    VIP Wholesale
+  {{/contains}}
+  <button class="drop-arrowed" onclick="displayMembership()">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 55.751 55.751" xml:space="preserve">
+      <path d="M31.836 43.006c.282-.281.518-.59.725-.912L54.17 20.485a5.403 5.403 0 0 0 0-7.638 5.403 5.403 0 0 0-7.638 0l-18.608 18.61L9.217 12.753A5.4 5.4 0 0 0 0 16.571a5.363 5.363 0 0 0 1.582 3.816l21.703 21.706c.207.323.445.631.729.913a5.367 5.367 0 0 0 3.91 1.572 5.37 5.37 0 0 0 3.912-1.572z"/>
+    </svg>
+  </button>
+  <div class="absolute drop-area hide" aria-hidden="true">
+    <ul>
+      <li>
+      {{#compare customer.customer_group_id 1}}
+        <div class="circle">
+          <div class="checkmark"></div>
+        </div>
+      {{/compare}}
+        <button {{#compare customer.customer_group_id 1}}class="chosen"{{/compare}} onclick="navMemberChange(1,this)">
+          Employee Pricing
+        </button>
+      </li>
+      <li>
+        {{#compare customer.customer_group_id 7}}
+          <div class="circle">
+            <div class="checkmark"></div>
+          </div>
+        {{/compare}}
+        <button {{#compare customer.customer_group_id 7}}class="chosen"{{/compare}} onclick="navMemberChange(7,this)">
+          VIP Friends &amp; Family Pricing
+        </button>
+      </li>
+      <li>
+        {{#compare customer.customer_group_id 10}}
+          <div class="circle">
+            <div class="checkmark"></div>
+          </div>
+        {{/compare}}
+        <button {{#compare customer.customer_group_id 10}}class="chosen"{{/compare}} onclick="navMemberChange(10,this)">
+          VIP Corporate
+        </button>
+      </li>
+      <li>
+        {{#compare customer.customer_group_id 11}}
+          <div class="circle">
+            <div class="checkmark"></div>
+          </div>
+        {{/compare}}
+        <button {{#compare customer.customer_group_id 11}}class="chosen"{{/compare}} onclick="navMemberChange(11,this)">
+          VIP Wholesale
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>
+<script>
+  var $membershipNav = document.querySelectorAll(".membership-change-nav");
+  var $membershipDropArea = document.getElementsByClassName('drop-area');
+  var viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+  
+  //add an event for mouseenter and one for mouseleave on desktop
+  if(viewportWidth >= 800) {
+    $membershipNav.forEach(item => {
+      item.addEventListener('mouseenter', event => {
+        for (var i = 0; i < $membershipDropArea.length; i++) {
+          $membershipDropArea[i].classList.remove('hide');
+          $membershipDropArea[i].setAttribute('aria-hidden', 'false');
+        }
+        item.classList.add('expand');
+      })
+    })
+    $membershipNav.forEach(item => {
+      item.addEventListener('mouseleave', event => {
+        for (var i = 0; i < $membershipDropArea.length; i++) {
+          $membershipDropArea[i].classList.add('hide');
+          $membershipDropArea[i].setAttribute('aria-hidden', 'true');
+        }
+        item.classList.remove('expand');
+      })
+    })
+  }
+
+  function navMemberChange(reqGroupValue) {
+    let $reqGroup = document.querySelector("#nav-member-update");
+    $reqGroup.value = reqGroupValue;
+    let action = 'https://us-central1-bigcommerce-sample-a679a.cloudfunctions.net/app/change';
+    let $form = document.querySelector('#nav-customer-group');
+    $form.setAttribute('action', action);
+    $form.submit();
+    let $iFramez = document.querySelector("#iframez");
+    // need to change the customer group text to something like "changing group"
+    var $groupText = document.querySelectorAll(".membership-change-nav");
+    for (var i = 0; i < $groupText.length; i++) {
+      $groupText[i].innerText = "Changing groups..."
+    }
+    $iFramez.onload = reloadReality;
+  }
+  function reloadReality() {
+    let $navLoader = document.querySelector(".navUserLoader");
+    gsap.to($navLoader,{width: '100%',duration: 10,ease: 'power1.in'});
+    setTimeout(function () { window.location = ''; }, 10000);
+  }
+  // for mobile user clicks
+  function displayMembership() {
+    for (var i = 0; i < $membershipDropArea.length; i++) {
+      if(!$membershipDropArea[i].classList.contains('hide')){
+        $membershipDropArea[i].classList.add('hide');
+        $membershipDropArea[i].setAttribute('aria-hidden', 'true');
+        $membershipNav.forEach(item => {
+          item.classList.remove('expand');
+        })
+      } else {
+        $membershipDropArea[i].classList.remove('hide');
+        $membershipDropArea[i].setAttribute('aria-hidden', 'false');
+        $membershipNav.forEach(item => {
+          item.classList.add('expand');
+        })
+      }
+    }
+  }
+</script>

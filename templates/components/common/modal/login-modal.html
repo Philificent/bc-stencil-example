@@ -1,0 +1,167 @@
+<style>
+  #login-overlay {
+    display: none;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0,.4);
+    z-index: 80;
+  }
+  .login-modal-container.show,
+  #login-overlay.show {
+    display: block;
+  }
+  .login-modal-container {
+    display: none;
+    background-color: #fff;
+    min-height: 310px;
+    height: auto;
+    max-width: 600px;
+    width: 90%;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 15px hsl(0deg 0% 100% / 50%);
+    z-index: 81;
+  }
+  .login-modal-flex {
+    display: flex;
+    justify-content: space-between;
+  }
+  #login-modal .form-actions {
+    margin-left: 0;
+    text-align: left;
+  }
+  .login-modal-flex img {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+  .login-modal-container h2 {
+    font-family: "Soehne-Kraftig";
+    margin-top: 0;
+    font-size: 1.688rem;
+    letter-spacing: 0.094rem;
+    text-transform: uppercase;
+  }
+  .login-modal-container .form-label {
+    text-transform: uppercase;
+  }
+  @media (min-width: 320px) {
+    .login-modal-container {
+      top: 40px;
+      padding: 20px
+    }
+  }
+  @media (min-width: 801px) {
+    .login-modal-container {
+      padding: 40px 75px;
+    }
+  }
+</style>
+<div id="login-overlay" aria-hidden="true"></div>
+<div id="login-modal" class="login-modal-container" aria-hidden="true">
+  <div class="login-modal-flex">
+    <h2>{{lang 'login.login'}}</h2>
+    <button onkeypress="closeModal(event)">
+      <img id="login-modal-close" src="https://cdn11.bigcommerce.com/s-hlsq3m036/images/stencil/original/image-manager/close-x.png?t=1658262682&_gl=1*abhw9f*_ga*MzEyNjg3NzQwLjE2NTE1MDU1MDc.*_ga_WS2VZYPC6G*MTY1ODI2MjY2Ny4xMjcuMS4xNjU4MjYyNjg0LjQz" alt="close" />
+    </button>
+  </div>
+  <form class="form" action="{{urls.auth.check_login}}" method="post">
+    {{inject 'useValidEmail' (lang 'forms.validate.common.email_address')}}
+    {{inject 'enterPass' (lang 'forms.validate.common.password')}}
+    <div class="form-field">
+      <label class="form-label" for="login_email">{{lang 'login.field_email'}}</label>
+      <input class="form-input" name="login_email" id="login_email" type="email">
+    </div>
+    <div class="form-field">
+      <label class="form-label" for="login_pass">{{lang 'login.field_password'}}</label>
+      <input class="form-input" id="login_pass" type="password" name="login_pass" autocomplete="off">
+    </div>
+    <div class="form-actions">
+      <input type="submit" class="button button--primary" value="{{lang 'login.submit_value' }}">
+      <a class="forgot-password" href="{{urls.auth.forgot_password}}">{{lang 'login.forgot_password' }}</a>
+    </div>
+  </form>
+</div>
+<script>
+  // login modal variables
+  const loginOverlay = document.getElementById('login-overlay');
+  const loginEl = document.getElementById('login-modal');
+  const loginClose = document.getElementById('login-modal-close');
+
+  // launch modal 
+  function launchLoginModal() {
+    setTimeout(() => {
+      if (!loginEl.classList.contains("show")) {
+        loginOverlay.classList.add("show");
+        loginOverlay.setAttribute('aria-hidden', 'false');
+        loginEl.classList.add("show");
+        loginEl.setAttribute('aria-hidden', 'false');
+        trapFocus(loginEl);
+        document.getElementById('login_email').focus(); // set focus on first input field
+      }
+    }, 250);
+  }
+
+  // close modal on "x" or exterior click
+  document.addEventListener("click", (e) => {
+    const isClosest = e.target.closest('#login-modal');
+    if(e.path[0] == loginClose){
+      loginEl.classList.remove("show");
+      loginEl.setAttribute('aria-hidden', 'true');
+      loginOverlay.classList.remove("show");
+      loginOverlay.setAttribute('aria-hidden', 'true');
+    }
+    if (!isClosest && loginEl.classList.contains("show")) {
+      loginEl.classList.remove("show");
+      loginEl.setAttribute('aria-hidden', 'true');
+      loginOverlay.classList.remove("show");
+      loginOverlay.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  // modal keyboard controls
+  function closeModal(e) {
+    const keyEnter = 13;
+    const keySpace = 32;
+    if (e.which == keyEnter || e.which == keySpace){
+      loginEl.classList.remove("show");
+      loginEl.setAttribute('aria-hidden', 'true');
+      loginOverlay.classList.remove("show");
+      loginOverlay.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  // lock focus on modal for accessiblity
+  function trapFocus(el) {
+    let focusableEls = el.querySelectorAll('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])');
+    let firstFocusableEl = focusableEls[0];  
+    let lastFocusableEl = focusableEls[focusableEls.length - 1];
+    let keyTab = 9;
+  
+    el.addEventListener('keydown', function(e) {
+      let isTabPressed = (e.key === 'Tab' || e.keyCode === keyTab );
+
+      if (!isTabPressed) { 
+        return; 
+      }
+		
+      // shift + tab 
+      if ( e.shiftKey ) {
+        if (document.activeElement === firstFocusableEl) {
+          lastFocusableEl.focus();
+            e.preventDefault();
+          }
+        } else {
+        // tab
+        if (document.activeElement === lastFocusableEl) {
+          firstFocusableEl.focus();
+            e.preventDefault();
+          }
+        }
+    });
+   }
+</script>

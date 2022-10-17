@@ -1,0 +1,281 @@
+<h2 class="page-heading">{{lang 'products.new' }}</h2>
+  <section id="new-product-container" class="productCarousel"
+    data-slick='{
+        "infinite": false,
+        "mobileFirst": true,
+        "slidesToShow": 2,
+        "slidesToScroll": 2,
+        "slide": "[data-product-slide]",
+        "responsive": [
+            {
+                "breakpoint": 800,
+                "settings": {
+                    "slidesToShow": 4,
+                    "slidesToScroll": 4
+                }
+            },
+            {
+                "breakpoint": 550,
+                "settings": {
+                    "slidesToShow": 3,
+                    "slidesToScroll": 3
+                }
+            }
+        ]
+    }'
+  >
+  <!-- js injects slides here -->
+  </section>
+<script>
+  
+  // request and display products for "new" carousel
+  var productIdArray = [{{theme_settings.new_prod_carousel_1}},{{theme_settings.new_prod_carousel_2}},{{theme_settings.new_prod_carousel_3}},{{theme_settings.new_prod_carousel_4}},{{theme_settings.new_prod_carousel_5}},{{theme_settings.new_prod_carousel_6}}];
+  const newContainer = document.getElementById('new-product-container');
+  const currencyUSD = '$';
+
+  // get product array from new prod carousel theme settings
+  function getProductById(arr) {
+    return fetch('/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer {{ settings.storefront_api.token }}'
+      },
+      body: JSON.stringify({
+        query: `
+          query MyQuery {
+              site {
+                  products (entityIds: [`+arr+`]) {
+                    edges {
+                      product: node {
+                        ...ProductFields
+                        }
+                      }
+                  }
+                  currency (currencyCode: USD) {
+                      display {
+                          symbol
+                          symbolPlacement
+                          decimalToken
+                          thousandsToken
+                          decimalPlaces
+                      }
+                  }
+              }
+          }
+          fragment ProductFields on Product {
+              id
+              entityId
+              name
+              path
+              inventory {
+                  isInStock
+                  hasVariantInventory
+              }
+              variants(first: 20) {
+                edges {
+                  node {
+                    sku
+                    prices {
+                      priceRange {
+                          min {
+                              ...MoneyFields
+                          }
+                          max {
+                              ...MoneyFields
+                          }
+                      }
+                      retailPrice {
+                        ...MoneyFields
+                      }
+                    }
+                  }
+                }
+              }
+              productOptions {
+                  edges {
+                        node {
+                          entityId
+                          displayName
+                          isRequired
+                        }
+                  }
+              }
+              defaultImage {
+                  url(width: 500)
+                  altText
+              }
+              customFields {
+                edges {
+                  node {
+                    name
+                    value
+                  }
+                }
+              }
+              prices {
+                  priceRange {
+                      min {
+                          ...MoneyFields
+                      }
+                      max {
+                          ...MoneyFields
+                      }
+                  }
+                  retailPrice {
+                      ...MoneyFields
+                  }
+                  basePrice {
+                      ...MoneyFields
+                  }
+                  price {
+                      ...MoneyFields
+                  }
+              }
+              brand {
+                name
+              }
+          }
+          fragment MoneyFields on Money {
+              value
+              currencyCode
+          }
+      `}),
+  }).then(res => res.json())
+    .then(res => res.data);
+  }
+
+  // find min/max price
+  function getMinMax(arr) {
+    let min = arr[0];
+    let max = arr[0];
+    let i = arr.length;
+    while (i--) {
+      min = arr[i] < min ? arr[i] : min;
+      max = arr[i] > max ? arr[i] : max;
+    }
+    return { min, max };
+  }
+
+  // render product carousel on page
+  function renderProduct(product) {
+    if (product != undefined) {
+        product.forEach(product => {
+            
+            // standard variables to build card
+            let divCard = document.createElement("div");
+            let id = product.product.entityId;
+            let name = product.product.name;
+            let brand = product.product.brand.name;
+            let path = product.product.path;
+            let defaultImage = product.product.defaultImage.url;
+            let inventory = product.product.inventory.isInStock;
+            
+            // prices
+            let basePrice = parseFloat(product.product.prices.basePrice.value).toFixed(2);
+            let defaultPrice = parseFloat(product.product.prices.price.value).toFixed(2);
+            let priceMax = parseFloat(product.product.prices.priceRange.max.value).toFixed(2);
+            let priceMin = parseFloat(product.product.prices.priceRange.min.value).toFixed(2);
+            let displayPrice = '';
+            let variant = product.product.variants.edges;
+            let priceRangeArr = [];
+            let minPrice = '';
+            let maxprice = '';
+            
+            // check if there is a price range
+            if(priceMax > priceMin){
+              variant.forEach(variant => {
+                if(variant.node.prices.retailPrice){
+                  priceRangeArr.push(variant.node.prices.retailPrice.value);
+                }
+              });
+              if(priceRangeArr.length > 0){
+                let priceRanges = getMinMax(priceRangeArr);
+                minPrice = parseFloat(priceRanges.min).toFixed(2);
+                maxPrice = parseFloat(priceRanges.max).toFixed(2);
+              }
+            }
+            
+            // price checks for msrp and sale
+            if(product.product.prices.retailPrice != null){
+              let retailPrice = parseFloat(product.product.prices.retailPrice.value).toFixed(2);
+
+              if(priceMax > priceMin){
+                if((basePrice == defaultPrice) && (basePrice && defaultPrice < product.product.prices.retailPrice)) { // msrp & current price
+                  displayPrice = '<span class="price--rrp">MSRP: </span><span data-product-rrp-price-without-tax="" class="price price--rrp">'+currencyUSD+priceMin+' - '+currencyUSD+priceMax+'</span><br /><span data-product-price-without-tax="" class="price price--withoutTax">'+currencyUSD+defaultPrice+'</span>';
+                } else if(basePrice > defaultPrice){ //  msrp, regular price & sale price
+                  displayPrice = '<span class="price--rrp">MSRP: </span><span data-product-rrp-price-without-tax="" class="price price--rrp">'+currencyUSD+minPrice+' - '+currencyUSD+maxPrice+'</span><br /><span data-product-price-without-tax="" class="price price--withoutTax">'+currencyUSD+defaultPrice+' - '+currencyUSD+priceMax+'</span>';
+                } else { // msrp only
+                  displayPrice = '<span>MSRP: </span><span data-product-rrp-price-without-tax="" class="price">'+currencyUSD+retailPrice+'</span><br /><span data-product-price-without-tax="" class="price price--withoutTax">'+currencyUSD+defaultPrice+'</span>';
+                }
+              } else {
+                if((basePrice == defaultPrice) && (basePrice && defaultPrice < product.product.prices.retailPrice)) { // msrp & current price
+                  displayPrice = '<span class="price--rrp">MSRP: </span><span data-product-rrp-price-without-tax="" class="price price--rrp">'+currencyUSD+retailPrice+'</span><br /><span data-product-price-without-tax="" class="price price--withoutTax">'+currencyUSD+defaultPrice+'</span>';
+                } else if(basePrice > defaultPrice){ //  msrp, regular price & sale price
+                  displayPrice = '<span class="price--rrp">MSRP: </span><span data-product-rrp-price-without-tax="" class="price price--rrp">'+currencyUSD+retailPrice+'</span><br /><span class="price--rrp">Was: </span><span  data-product-non-sale-price-without-tax="" class="price price--non-sale">'+currencyUSD+basePrice+'</span><br /><span class="price-now-label">Now: </span><span data-product-price-without-tax="" class="price price--withoutTax">'+currencyUSD+defaultPrice+'</span>';
+                } else { // msrp only
+                  displayPrice = '<span>MSRP: </span><span data-product-rrp-price-without-tax="" class="price">'+currencyUSD+retailPrice+'</span><br /><span data-product-price-without-tax="" class="price price--withoutTax">'+currencyUSD+defaultPrice+'</span>';
+                }
+              }
+              
+            } else if(basePrice > defaultPrice) { // regular price vs sale price
+              displayPrice = '<span class="price--rrp">Was: </span><span  data-product-non-sale-price-without-tax="" class="price price--non-sale">'+currencyUSD+basePrice+'</span><br /><span class="price-now-label">Now: </span><span data-product-price-without-tax="" class="price price--withoutTax">'+currencyUSD+defaultPrice+'</span>';
+            } else { // display price range if applicable
+              if(priceMax > priceMin){
+                displayPrice = '<span data-product-price-without-tax class="price price--withoutTax">'+currencyUSD+priceMin+' - '+currencyUSD+priceMax+'</span>';
+              } else {
+                displayPrice = '<span data-product-price-without-tax class="price price--withoutTax">'+currencyUSD+basePrice+'</span>';
+              }
+            }
+            
+            // custom badges
+            let badgeHTML = '';
+            let badgeBestSeller = '';
+            let badgeEmployeeFav = '';
+            let badgeDeal = '';
+            let badgeSellingFast = '';
+
+            // iterate through custom badges to pull styling & values
+            if(inventory != false){
+              for (var key in product.product.customFields.edges) {
+                var customBadgeName = product.product.customFields.edges[key].node.name;
+                var customBadgeValue = product.product.customFields.edges[key].node.value;
+                
+                if(customBadgeName == 'new-badge') {
+                  badgeHTML = '<div class="custom-badge custom-badge-new-product"><p>'+customBadgeValue+'</p></div>'
+                }
+                if(customBadgeName == 'best-seller-badge'){
+                  badgeBestSeller = '<div class="custom-badge custom-badge-best-seller"><p>'+customBadgeValue+'</p></div>'
+                }
+                if(customBadgeName == 'employee-fav-badge'){
+                  badgeEmployeeFav = '<div class="custom-badge custom-badge-employee-fav"><p>'+customBadgeValue+'</p></div>'
+                }
+                if(customBadgeName == 'deal-of-day-badge'){
+                  badgeDeal = '<div class="custom-badge custom-badge-deal"><p>'+customBadgeValue+'</p></div>'
+                }
+                if(customBadgeName == 'selling-fast-badge'){
+                  badgeSellingFast = '<div class="custom-badge custom-badge-selling-fast"><p>'+customBadgeValue+'</p></div>'
+                }
+                if(customBadgeName == 'free-shipping-badge'){
+                  badgeSellingFast = '<div class="custom-badge custom-badge-free-shipping"><p>'+customBadgeValue+'</p></div>'
+                }
+              }
+            } else {
+              badgeHTML = '<div class="custom-badge custom-badge-no-stock"><p>Out of stock</p></div>';
+            }
+            
+            // replica of card component
+            let slide = '<article class="card new-carousel-card" data-test="card-'+id+'"><figure class="card-figure"><a href="'+path+'" class="card-figure__link" aria-label="'+name+', '+currencyUSD+basePrice+'" tabindex="0"><div class="card-img-container"><img src="'+defaultImage+'" alt="'+name+'" image" title="'+name+'" class="card-image lazyautosizes ls-is-cached lazyloaded"/></div></a></figure><div class="card-body"><p class="card-text" data-test-info-type="brandName">'+brand+'</p><h3 class="card-title"><a aria-label="'+name+', '+currencyUSD+basePrice+'" href="'+path+'">'+name+'</a></h3><div class="card-text" data-test-info-type="price"><div class="price-section price-section--withoutTax"><span class="price-label"></span><span class="price-now-label" style="display:none;">Now:</span>'+displayPrice+'</div></div><div class="card-badge-container">'+badgeHTML+badgeBestSeller+badgeEmployeeFav+badgeDeal+badgeSellingFast+'</div></article>';
+
+            // create carousel container for each slide
+            divCard.classList.add('productCarousel-slide');
+            divCard.setAttribute('data-product-slide', '');
+            divCard.innerHTML = slide;
+            newContainer.appendChild(divCard);
+        });
+    }
+  }
+  getProductById(productIdArray).then(data => {
+      renderProduct(data.site.products.edges);
+  });
+</script>

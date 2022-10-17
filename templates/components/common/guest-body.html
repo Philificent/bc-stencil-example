@@ -1,0 +1,19 @@
+<main class="body guest-login" id="main-content" role="main" data-currency-code="{{currency_selector.active_currency_code}}">
+  {{#block "hero"}} {{/block}}
+  <div id="login-container" class="container">
+    {{!-- {{#block "page"}} {{/block}} --}}
+    <div class="main full">
+      {{#if page_type '==' "login"}}
+        {{> components/common/login-form}}
+      {{else}}
+        {{{region name="home_guest_hero--global"}}}
+        {{{region name="home_guest_foundation--global"}}}
+        {{{region name="home_guest_banner--global"}}}
+        {{{region name="home_guest_contact--global"}}}
+      {{/if}}
+      {{> components/common/modal/login-modal}}
+    </div>
+  </div>
+  {{> components/common/modal/modal}}
+  {{> components/common/alert/alert-modal}}
+</main>

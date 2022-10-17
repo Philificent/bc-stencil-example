@@ -1,0 +1,149 @@
+<nav class="navUser" aria-label="account">
+    {{#or customer (unless theme_settings.restrict_to_login)}}
+        {{> components/common/currency-selector}}
+    {{/or}}
+
+    {{#if page_type '===' 'default'}}
+        <h1 class="header-logo header-logo--{{theme_settings.logo-position}}">
+        {{> components/common/store-logo}}
+        </h1>
+    {{else}}
+        <div class="header-logo header-logo--{{theme_settings.logo-position}}">
+        {{> components/common/store-logo}}
+        </div>
+    {{/if}}
+    {{#contains customer.email '@maloufcompanies.com' }}
+        {{> components/account/nav-membership-change}}
+    {{/contains}}
+    {{#contains customer.email '@maloufsleep.com' }}
+        {{> components/account/nav-membership-change}}
+    {{/contains}}
+    {{#contains customer.email '@deoinc.com' }}
+        {{> components/account/nav-membership-change}}
+    {{/contains}}
+
+    <ul class="navUser-section navUser-section--alt">
+        {{#if customer.store_credit.value '>' 0}}
+            <li class="navUser-item">
+                <a class="navUser-action navUser-action--storeCredit"
+                   data-dropdown="storeCredit-dropdown"
+                   data-options="align:bottom"
+                   href="{{urls.cart}}"
+                   aria-label="{{lang 'common.store_credit_overview' credit=customer.store_credit.formatted}}"
+                >
+                    <span class="navUser-action-divider">
+                        {{lang 'common.store_credit_overview' credit=customer.store_credit.formatted}}
+                    </span>
+                </a>
+                <div class="dropdown-menu" id="storeCredit-dropdown" data-dropdown-content aria-hidden="true">
+                    {{{lang 'common.store_credit' store_credit=customer.store_credit.formatted}}}
+                </div>
+            </li>
+        {{/if}}
+        <li class="navUser-item">
+            <a class="navUser-action navUser-item--compare"
+               href="{{urls.compare}}"
+               data-compare-nav
+               aria-label="{{lang 'common.compare'}}"
+            >
+                {{lang 'common.compare'}} <span class="countPill countPill--positive countPill--alt"></span>
+            </a>
+        </li>
+        {{#if theme_settings.social_icon_placement_top}}
+            <li class="navUser-item navUser-item--social">
+                {{> components/common/social-links}}
+            </li>
+            <li class="navUser-item navUser-item--divider">|</li>
+        {{/if}}
+        <li class="navUser-item">
+            <button class="navUser-action navUser-action--quickSearch"
+               type="button"
+               id="quick-search-expand"
+               data-search="quickSearch"
+               aria-controls="quickSearch"
+               aria-label="{{lang 'common.search'}}"
+            >
+            {{lang 'common.search'}}
+            </button>
+        </li>
+        {{#if settings.gift_certificates_enabled}}
+            <li class="navUser-item">
+                <a class="navUser-action"
+                   href="{{urls.gift_certificate.purchase}}"
+                   aria-label="{{lang 'common.gift_cert'}}"
+                >
+                    {{lang 'common.gift_cert'}}
+                </a>
+            </li>
+        {{/if}}
+        <li class="navUser-item navUser-item--account">
+            {{#if customer}}
+                <a class="navUser-action"
+                   href="{{urls.account.index}}"
+                   aria-label="{{lang 'common.account'}}"
+                >
+                    {{lang 'common.account'}}
+                </a>
+                <a class="navUser-action"
+                   href="{{urls.auth.logout}}"
+                   aria-label="{{lang 'common.logout'}}"
+                >
+                    {{lang 'common.logout'}}
+                </a>
+            {{else}}
+                <a class="navUser-action"
+                   href="{{urls.auth.login}}"
+                   aria-label="{{lang 'common.login'}}"
+                >
+                    {{lang 'common.login'}}
+                </a>
+                {{#if settings.account_creation_enabled}}
+                    <span class="navUser-or">{{lang 'common.or'}}</span>
+                    <a class="navUser-action"
+                       href="{{urls.auth.create_account}}"
+                       aria-label="{{lang 'common.sign_up'}}"
+                    >
+                        {{lang 'common.sign_up'}}
+                    </a>
+                {{/if}}
+            {{/if}}
+        </li>
+        <li class="navUser-item navUser-item--cart">
+            <a class="navUser-action"
+               data-cart-preview
+               data-dropdown="cart-preview-dropdown"
+               data-options="align:right"
+               href="{{urls.cart}}"
+               aria-label="{{lang 'cart.nav_aria_label'}}"
+            >
+            <?xml version="1.0" encoding="UTF-8"?>
+                <svg width="27px" height="23px" viewBox="0 0 27 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <title>Group 3</title>
+                    <defs>
+                        <polygon id="path-1" points="0 0 26.976066 0 26.976066 21.5 0 21.5"></polygon>
+                    </defs>
+                    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g id="Navigation-Desktop" transform="translate(-1382.000000, -21.000000)">
+                            <g id="Group-2" transform="translate(1382.023934, 9.730000)">
+                                <g id="Group-3" transform="translate(0.000000, 11.905600)">
+                                    <mask id="mask-2" fill="white">
+                                        <use xlink:href="#path-1"></use>
+                                    </mask>
+                                    <g id="Clip-2"></g>
+                                    <path d="M22.0667619,10.5182764 L8.01385799,10.5182764 L6.8307084,5.01139232 L23.6076673,5.01139232 L22.0667619,10.5182764 Z M19.1500298,18.9447035 C18.8477262,18.9447035 18.6016413,18.6986187 18.6016413,18.396315 C18.6016413,18.0940113 18.8477262,17.848182 19.1500298,17.848182 C19.4523335,17.848182 19.6981628,18.0940113 19.6981628,18.396315 C19.6981628,18.6986187 19.4523335,18.9447035 19.1500298,18.9447035 L19.1500298,18.9447035 Z M11.1692643,18.9447035 C10.8672161,18.9447035 10.6211312,18.6986187 10.6211312,18.396315 C10.6211312,18.0940113 10.8672161,17.848182 11.1692643,17.848182 C11.4715679,17.848182 11.7176528,18.0940113 11.7176528,18.396315 C11.7176528,18.6986187 11.4715679,18.9447035 11.1692643,18.9447035 L11.1692643,18.9447035 Z M26.9761938,2.45599366 L6.28155323,2.45599366 L5.75386341,0 L-0.000127769933,0 L-0.000127769933,2.55539867 L3.68910128,2.55539867 L6.80745428,17.0685298 L8.36829178,17.0685298 C8.17638134,17.4717718 8.06573258,17.9207553 8.06573258,18.396315 C8.06573258,20.1076655 9.45791377,21.5001022 11.1692643,21.5001022 C12.8808703,21.5001022 14.2730515,20.1076655 14.2730515,18.396315 C14.2730515,17.9207553 14.1624027,17.4717718 13.9704923,17.0685298 L16.3490574,17.0685298 C16.1571469,17.4717718 16.0462426,17.9207553 16.0462426,18.396315 C16.0462426,20.1076655 17.4386793,21.5001022 19.1500298,21.5001022 C20.8613803,21.5001022 22.2535615,20.1076655 22.2535615,18.396315 C22.2535615,17.9207553 22.1429128,17.4717718 21.9510023,17.0685298 L23.288498,17.0685298 L23.288498,14.5131312 L8.8722164,14.5131312 L8.56301316,13.0736751 L24.0052873,13.0736751 L26.9761938,2.45599366 Z" id="Fill-1" fill="#2C272D" mask="url(#mask-2)"></path>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+                <span class="countPill cart-quantity"></span>
+            </a>
+
+            <div class="dropdown-menu" id="cart-preview-dropdown" data-dropdown-content aria-hidden="true"></div>
+        </li>
+    </ul>
+    <div class="dropdown dropdown--quickSearch" id="quickSearch" aria-hidden="true" data-prevent-quick-search-close>
+        {{> components/common/quick-search name='nav-quick-search'}}
+    </div>
+  <div class="navUserLoader"></div>
+</nav>

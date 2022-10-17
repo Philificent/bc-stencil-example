@@ -1,0 +1,154 @@
+<style>
+  .relative {position: relative;}
+  .flex {display: flex;}
+  .flex-col {flex-direction: column}
+  #active-membership {border-radius: 1rem;box-shadow: 0 0 20px -10px rgba(0,0,0,0.5);padding: 0.6rem;}
+  #active-membership h3 {margin-top: 0;}
+  #active-membership .membership-button {min-width: 200px;margin-left: 3rem;opacity: 0;background: #fff;}
+  #active-membership .membership-button.active {background: #444;color: #fff;}
+  .membership-check {width: 20px;height: 20px;position: absolute;z-index: -1;left: 60px;opacity: 0;}
+  .membership-text {margin-left: 0.5rem;}
+  #membership-progress-area {width: 100%;border-radius: 1rem;position: relative;height: 0.5rem;overflow: hidden}
+  #membership-progress {width: 0%;height: 100%;background: #099;position: absolute;left: 0;top: 0;}
+  
+  @media (min-width: 320px) {
+    #active-membership .relative.flex {flex-direction: column;}
+    .membership-check {top: 10%;}
+    #active-membership .membership-button {max-width: 330px;display: flex;flex-direction: column;justify-content: center;align-items: center;}
+  }
+  @media (min-width: 500px) {
+    #active-membership .relative.flex {flex-direction: row;}
+    .membership-check {top: calc(50% - 17px);}
+    #active-membership .membership-button {max-width: 200px;}
+  }
+</style>
+
+<div class="account account--fixed">
+  <section id="active-membership">
+    <h3>Active Memberships</h3>
+
+    <div class="flex flex-col buttons">
+      <div class="relative flex">
+        <button class="membership-button button{{#compare customer.customer_group_id 1}} active{{/compare}}"
+          {{#if customer.customer_group_id "!=" 1}}onclick="fire(1,this)"
+          {{else}} disabled="disabled"
+          {{/if}}>
+          Malouf Employee
+        </button>
+        <svg class="membership-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15">
+          <path d="M7.5 0a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15Zm-.75 10.875L12 5.625l-1.057-1.058L6.75 8.752l-2.317-2.31L3.375 7.5l3.375 3.375Z" fill="#3A3738" fill-rule="nonzero"/>
+        </svg>
+        <p class="membership-text">As an employee you are eligible to make purchases for your household.</p>
+      </div>
+      <div class="relative flex">
+        <button class="membership-button button{{#compare customer.customer_group_id 7}} active{{/compare}}"
+          {{#if customer.customer_group_id "!=" 7}}onclick="fire(7,this)"
+          {{else}} disabled="disabled"
+          {{/if}}>
+          VIP Friends and Family
+        </button>
+        <svg class="membership-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15">
+          <path d="M7.5 0a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15Zm-.75 10.875L12 5.625l-1.057-1.058L6.75 8.752l-2.317-2.31L3.375 7.5l3.375 3.375Z" fill="#3A3738" fill-rule="nonzero"/>
+        </svg>
+        <p class="membership-text">This membership should be activated when shopping for friends or family members that are outside of your household.</p>
+      </div>
+      <div class="relative flex">
+        <button class="membership-button button{{#compare customer.customer_group_id 10}} active{{/compare}}"
+          {{#if customer.customer_group_id "!=" 8}}onclick="fire(10,this)"
+          {{else}} disabled="disabled"
+          {{/if}}>
+          VIP Corporate
+        </button>
+        <svg class="membership-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15">
+          <path d="M7.5 0a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15Zm-.75 10.875L12 5.625l-1.057-1.058L6.75 8.752l-2.317-2.31L3.375 7.5l3.375 3.375Z" fill="#3A3738" fill-rule="nonzero"/>
+        </svg>
+        <p class="membership-text">This membership should be used to make purchases for corporate partners.</p>
+      </div>
+      <div class="relative flex">
+        <button class="membership-button button{{#compare customer.customer_group_id 11}} active{{/compare}}"
+          {{#if customer.customer_group_id "!=" 8}}onclick="fire(11,this)"
+          {{else}} disabled="disabled"
+          {{/if}}>
+          VIP Wholesale
+        </button>
+        <svg class="membership-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15">
+          <path d="M7.5 0a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15Zm-.75 10.875L12 5.625l-1.057-1.058L6.75 8.752l-2.317-2.31L3.375 7.5l3.375 3.375Z" fill="#3A3738" fill-rule="nonzero"/>
+        </svg>
+        <p class="membership-text">This membership should be used to make purchases for wholesale distributors.</p>
+      </div>
+    </div>
+    {{!--
+    Note that the IDs are as follows:
+
+    Employee: 1
+    EmployeeFriends: 7
+    VIP Corporate: 10
+    VIP Wholesale: 11
+
+    --}}
+    <div id="membership-progress-area">
+      <div id="membership-progress"></div>
+    </div>
+  </section>
+</div>
+
+<form id="customer-group" method="post" target="hiddenFrame" name="customer-group">
+  <input type="hidden" value="{{customer.id}}" name="customerId" />
+  <input type="hidden" value="{{customer.email}}" name="email" />
+  <input type="hidden" value="{{customer.customer_group_id}}" name="current" />
+  <input id="update" type="hidden" value="" name="update" />
+</form>
+
+<iframe id="iframey" name="hiddenFrame" title="iframe used for ajaxery like magic, nothing to see here, move along" style="display: none;"></iframe>
+
+<script>
+  /**/
+  var init = function(){
+    // animate in the buttons and move them ever so slightly ;)
+    let $buttons = document.querySelectorAll('#active-membership .membership-button');
+    // gsap.set($buttons,{x: 10});
+    gsap.to($buttons,{opacity:1, stagger:0.2, duration:0.6, ease: "expo", onComplete: function() {
+      // find the active one and roll out the checkmark
+      let $activeCheckmark = document.querySelector(".membership-button.active").nextElementSibling;
+      gsap.to($activeCheckmark,{x:-50, opacity:1, duration:1, rotation:"360_ccw", ease: "expo"})
+    }});
+    // end init
+  };
+
+
+  document.addEventListener('readystatechange', event => {
+    if(event.target.readyState === 'complete') {
+      init();
+    }
+  });
+
+  function fire(reqGroupValue, $el) {
+    let $reqGroup = document.querySelector("#update");
+    $reqGroup.value = reqGroupValue;
+    //let action = 'https://us-central1-bigcommerce-sample-a679a.cloudfunctions.net/app/hello-world';
+    let action = 'https://us-central1-bigcommerce-sample-a679a.cloudfunctions.net/app/change';
+    let $form = document.querySelector('#customer-group');
+    $form.setAttribute('action', action);
+    $form.submit();
+    let $iFramey = document.querySelector("#iframey");
+    // show a loader or some such tomfoolery then invoke the new reality
+
+    if(typeof gsap !== 'undefined') {
+      // let's kick off an animation here with gsap to help ease the 5sec wait for the API to update the customer
+      let $activeButton = document.querySelector(".membership-button.active");
+      let $activeCheckmark = $activeButton.nextElementSibling;
+      gsap.to($activeCheckmark,{x:0, opacity:0, duration:1, rotation:"0_cw", ease: "expo"})
+      // gsap.to($activeButton,{background: "linear-gradient(0deg, #fff 0%, rgba(255,255,255,1) 100%)",color: "#000",border: "1px solid #444", duration:6});
+      gsap.to($activeButton,{background: "#fff",color: "#000",border: "1px solid #444", duration: 6});
+      gsap.to($el,{background: "#444",color: "#fff", duration: 6, delay: 6});
+      let $newActiveCheckmark = $el.nextElementSibling;
+      gsap.to($newActiveCheckmark,{x:-50, opacity:1, duration:1, rotation:"360_ccw", ease: "expo", delay: 10})
+    }
+    $iFramey.onload = reloadReality;
+  }
+  function reloadReality() {
+    let $progress = document.querySelector("#membership-progress")
+    gsap.to($progress,{width: '100%',duration: 10});
+    setTimeout(function () { window.location = ''; }, 10000);
+  }
+</script>

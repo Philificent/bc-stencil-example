@@ -1,0 +1,351 @@
+// =============================================================================
+// FOOTER (CSS)
+// =============================================================================
+
+
+// Layout and columns
+// -----------------------------------------------------------------------------
+//
+// 1. To enable the grid's display: inline-block; to work properly, we need to
+//    remove the white-space that it creates between columns with font-size: 0;
+// 2. Re-set the font-size that was reduced to 0 in point 1 for children.
+// 3. Fix for text flickers on windows devices
+//
+// -----------------------------------------------------------------------------
+
+.footer {
+    background-color: $footer-background;
+    border-top: container("border");
+    padding: 0;
+    position: relative;
+    transform: translateZ(0); // 3
+}
+
+.footer-title-sr-only {
+    height: 1px;
+    left: -10000px;
+    overflow: hidden;
+    position: absolute;
+    top: auto;
+    width: 1px;
+}
+
+.footer-info {
+    @include grid-row($behavior: nest);
+    margin: 0;
+    font-size: 0; // 1
+    display: flex;
+}
+
+.footer-info-col {
+    @include grid-column(12);
+    color: stencilColor("color-textSecondary");
+    display: inline-block;
+    float: none;
+    font-size: 0.75rem; // 2
+    margin-bottom: spacing("double");
+    overflow-wrap: break-word;
+    text-align: center;
+    vertical-align: top;
+    // TODO: specifically use vendor only for IE11 since overflow-wrap is not supported here
+    -ms-word-break: break-all;
+    @include breakpoint("small") {
+        text-align: left;
+        width: width("6/12");
+    }
+
+    @include breakpoint("medium") {
+        width: width("4/12");
+    }
+
+    > :first-child {
+        margin-top: 0;
+    }
+
+    > :last-child {
+        margin-bottom: 0;
+    }
+}
+
+.footer-info-col--small {
+    @include breakpoint("medium") {
+        width: width("2/12");
+    }
+}
+
+.footer-info-col--social {
+    width: 100%;
+}
+
+.footer-info-col--left {
+    @include breakpoint("small") {
+        padding: 0;
+    }
+}
+
+.footer-info-col--right {
+    @include breakpoint("small") {
+        left: 50%;
+        position: inherit;
+        width: 50%;
+    }
+
+    @include breakpoint("medium") {
+        left: 0;
+        padding: 0;
+        text-align: right;
+        width: 100%;
+    }
+}
+
+
+// Content
+// -----------------------------------------------------------------------------
+
+.footer-info-heading {
+    color: $footer-heading-fontColor;
+    font-size: fontSize("base");
+    text-transform: inherit;
+}
+
+.footer-info-list {
+    list-style: none;
+    margin-left: 0;
+
+    a {
+        color: stencilColor("color-textSecondary");
+        text-decoration: none;
+
+        &:hover {
+            color: stencilColor("color-textSecondary--hover");
+            text-decoration: underline;
+        }
+    }
+}
+
+.footer-copyright {
+    text-align: center;
+    padding: 0 1.5rem 2.5rem;
+
+    @include breakpoint("small") {
+        text-align: center;
+    }
+
+    > .powered-by {
+        color: stencilColor("color-textSecondary");
+        font-size: fontSize("tiny");
+        margin: 0;
+    }
+
+    > .paypal-credit {
+        color: stencilColor("color-textSecondary");
+        font-size: fontSize("tiny");
+        margin: 1em 0 2em;
+    }
+
+    a {
+        color: stencilColor("color-textSecondary");
+        text-decoration: none;
+
+        &:hover {
+            color: stencilColor("color-textSecondary--hover");
+        }
+    }
+}
+
+.footer-payment-icons {
+    height: remCalc(40);
+    margin-top: spacing("single");
+
+    @include breakpoint("medium") {
+        margin-top: spacing("double");
+    }
+
+    .footer-payment-icon {
+        height: 100%;
+        margin: spacing("quarter");
+        vertical-align: middle;
+        width: remCalc(50);
+    }
+
+    svg {
+        fill: stencilColor("icon-color");
+    }
+}
+
+.footer-newsletter-summary {
+    text-align: left;
+}
+
+// Custom VIP Footer -- mobile first layout
+// -----------------------------------------------------------------------------
+
+@media (min-width: 320px) {
+
+    footer .container {
+        padding: 0;
+        max-width: unset;
+    }
+    
+    .footer-info {
+        flex-direction: column;
+    }
+
+    .footer-info-col {
+        margin-bottom: 0;
+    }
+
+    .footer-flex-row1 {
+        display: flex;
+        flex-direction: row;
+        border-bottom: 1px solid #d8d8d8;
+        padding: 0 1.5rem;
+    }
+
+    .footer-flex-row2 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .footer-logo {
+        width: 115px;
+        margin-bottom: 1.063rem
+    }
+
+    [data-section-type='footer-webPages'] {
+        border-right: 1px solid #d8d8d8;
+        width: 50%;
+        text-align: left;
+        padding-top: 1.625rem;
+    }
+
+    [data-section-type='footer-customerService'] {
+        text-align: left;
+        margin-left: 1.375rem;
+        padding-top: 1.625rem;
+
+        h3 {
+            font-size: 0.75rem;
+            font-family: "Soehne-Helbfett";
+            margin-bottom: 0.313rem;
+        }
+
+        h4 {
+            font-size: 0.75rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .footer-cs-hours {
+            margin-bottom: 0.938rem;
+        }
+
+        .footer-cs-contact {
+            font-family: "Soehne-Helbfett";
+            margin-bottom: 1.375rem;
+        }
+    }
+
+    [data-section-type='footer-foundation'] {
+        padding: 0 1.5rem 1.125rem;
+        border-bottom: 1px solid #d8d8d8;
+        margin-top: 1.125rem;
+        text-align: left;
+        
+        p {
+            margin-bottom: 0;
+        }
+    }
+
+    [data-section-type='newsletterSubscription'] {
+        text-align: left;
+        padding: 1.563rem 1.5rem 1.125rem;
+
+        h3 {
+            font-size: 0.75rem;
+            font-family: "Soehne-Helbfett";
+            margin-bottom: 0.313rem;
+        }
+
+        p {
+            max-width: 175px;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            border-radius: 0;
+            flex: auto;
+        }
+
+        .button {
+            background-color: #212529;
+            color: #FFFFFF;
+            max-width: 103px;
+            width: 100%;
+            margin-left: 0;
+            padding: 8px 0 22px;
+            font-size: 12px;
+            font-family: "Soehne-Helbfett";
+            height: 1rem;
+            border-radius: 0;
+        }
+    }
+}
+
+@media (min-width: 768px) {
+        
+    .footer-info {
+        flex-direction: row;
+        justify-content: center;
+        border-bottom: 1px solid #d8d8d8;
+    }
+
+    .footer-flex-row1 {
+        padding: 0 0 0 1.5rem;
+        border: 0;
+    }
+
+    .footer-flex-row2 {
+        flex-direction: row;
+    }
+
+    [data-section-type='footer-customerService'] {
+        border-right: 1px solid #d8d8d8;
+        height: 270px;
+    }
+
+    [data-content-region='footer_foundation--global'] {
+        border-right: 1px solid #d8d8d8;
+    }
+
+    [data-section-type='newsletterSubscription'] {
+        &.footer-info-col {
+            width: 50%;
+        }
+        .form-input {
+            flex: unset;
+        }
+        .button {
+            margin-top: 0.938rem;
+        }
+    }
+
+    .footer-copyright {
+        padding: 0;
+        margin: 1rem 0;
+    }
+}
+
+@media (min-width: 960px) {
+    [data-section-type='newsletterSubscription'] {
+        .form-input {
+            width: 222px;
+        }
+    }
+}
+

@@ -1,0 +1,83 @@
+<style>
+  .membership-rules {
+    background-color: #EDEDED;
+    display: flex;
+    justify-content: space-around;
+    color: #565656;
+    font-size: 0.75rem;
+  }
+  @media (min-width: 320px) {
+    .membership-rules { 
+      flex-direction: column;
+      padding: 0 1.25rem 1.625rem;
+    }
+    .membership-rules h2 {
+      font-family: "Soehne-Helbfett";
+      font-size: 0.75rem;
+      color: #565656;
+    }
+    .membership-rules-content {
+      display: flex;
+      flex-direction: column;
+    }
+    .membership-rules-content div {
+      margin-bottom: 0.625rem;
+    }
+    .membership-rules-content span {
+      margin-left: 10px;
+      display: inline-block;
+      width: calc(100% - 40px);
+      vertical-align: top;
+    }
+    .membership-rules img {
+      width: 19px;
+      height: 16px;
+      margin-right: 0.563rem;
+    }
+    .membership-separator {
+      display: none;
+    }
+  }
+  @media (min-width: 960px) {
+    .membership-rules { 
+      flex-direction: row;
+      padding: 2rem 0;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    .membership-rules h2 {
+      font-size: 1rem;
+      width: 145px;
+      margin-top: 0;
+    }
+    .membership-separator {
+      height: 200px;
+      width: 2px;
+      background-color: #d8d8d8;
+      display: block;
+      position: absolute;
+      top: -32px;
+    }
+    .membership-rules-content {
+      max-width: 735px;
+      margin-left: 1.25rem;
+      position: relative;
+    }
+    .membership-rules-content .rule-1,
+    .membership-rules-content .rule-2,
+    .membership-rules-content .rule-3 {
+      margin-left: 2rem;
+    }
+  }
+</style>
+<section class="membership-rules" aria-label="membership">
+  <div class="membership-header">
+    <h2>{{lang 'footer.membership'}}</h2>
+  </div>
+  <div class="membership-rules-content">
+    <div class="membership-separator"></div>
+    <div class="rule-1"><img src="https://cdn11.bigcommerce.com/s-hlsq3m036/images/stencil/original/image-manager/number1.png?t=1658786240&_gl=1*1lv7jp0*_ga*MzEyNjg3NzQwLjE2NTE1MDU1MDc.*_ga_WS2VZYPC6G*MTY1ODc4NjIxOC4xNDQuMS4xNjU4Nzg2MjQzLjM1" alt=""/><span>{{lang 'footer.membership_1'}}</span></div>
+    <div class="rule-2"><img src="https://cdn11.bigcommerce.com/s-hlsq3m036/images/stencil/original/image-manager/number2.png?t=1658786240&_gl=1*10bzt55*_ga*MzEyNjg3NzQwLjE2NTE1MDU1MDc.*_ga_WS2VZYPC6G*MTY1ODc4NjIxOC4xNDQuMS4xNjU4Nzg2MjQzLjM1" alt=""/><span>{{lang 'footer.membership_2'}}</span></div>
+    <div class="rule-3"><img src="https://cdn11.bigcommerce.com/s-hlsq3m036/images/stencil/original/image-manager/number3.png?t=1658786241&_gl=1*10bzt55*_ga*MzEyNjg3NzQwLjE2NTE1MDU1MDc.*_ga_WS2VZYPC6G*MTY1ODc4NjIxOC4xNDQuMS4xNjU4Nzg2MjQzLjM1" alt=""/><span>{{lang 'footer.membership_3'}}</span></div>
+  </div>
+</section>
